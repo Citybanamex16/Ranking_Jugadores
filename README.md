@@ -1,6 +1,6 @@
 # Ranking de Jugadores - Consola C++
 
-Este proyecto implementa un **ranking de jugadores** basado en un archivo CSV con sus nombres, puntajes y niveles. Está pensado para ejecutarse directamente en la **terminal** sin interfaz gráfica. Además, aplica **algoritmos de ordenamiento** como QuickSort y MergeSort para organizar la tabla.
+Este proyecto implementa un **ranking de jugadores** basado en un archivo CSV con sus nombres, puntajes y niveles. Está pensado para ejecutarse directamente en la **terminal** sin interfaz gráfica. Además, aplica **algoritmos de ordenamiento** como QuickSort organizar la tabla en base a diferentes parametros como el **Puntaje** o el **Nivel** del jugador.
 
 ---
 
@@ -11,7 +11,6 @@ Este proyecto implementa un **ranking de jugadores** basado en un archivo CSV co
   1. Puntaje
   2. Nivel
 - Muestra la tabla de manera organizada con posiciones, nombres, puntajes y categorías.
-- Calcula y ajusta duplas de jugadores para equilibrar niveles si es necesario.
 
 ---
 

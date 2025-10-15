@@ -118,7 +118,6 @@ int main()
 		cout << "Archivo CSV no encontrado" << endl;
 		cout << "Ingresa la ruta del archivo CSV: ";
 		std::string nueva_ruta;
-		std::cout << "Ingresa la ruta del archivo CSV: ";
 		std::getline(std::cin, nueva_ruta); // Lee toda la línea, con espacios
 		archivo.open(nueva_ruta);
 			if(archivo.is_open())

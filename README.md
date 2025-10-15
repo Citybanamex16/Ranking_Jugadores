@@ -25,4 +25,4 @@ Luis,1800,1
 
 1. Coloca el archivo CSV en la misma carpeta que el ejecutable **opcionalmente** con nombre `Ranking_CSV.csv`.  
 2. Si el programa **no encuentra el CSV en la ruta relativa**, pedirá al usuario que ingrese la **ruta completa** del archivo.
-3.  Luego, podrás interactuar con el programa para ordenar y visualizar el ranking.
+3. Luego, podrás interactuar con el programa para ordenar y visualizar el ranking.

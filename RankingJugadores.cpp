@@ -13,7 +13,7 @@ Matrícula
 #include <fstream> //Librería para lectura de Archivos .CSV
 #include <sstream>
 #include <iomanip>
-
+#include "Proyect_dlist.h"
 using namespace std; 
 
 
@@ -91,13 +91,40 @@ void imprimir_matriz(std::vector<T>& _jugadores) {
     }
 }
 
-void menu(){
+void menu_sort(){
+	//Menu de opciones de Sorting
 	cout << " ¿Como quieres ordenar el ranking ? " << endl;
 	cout << " 1. Por Puntaje " << endl;
 	cout << " 2. Por nivel " << endl;
-	cout << " 3. Salir " << endl; 
+	cout << " 3. Regresar " << endl; 
 
 }
+
+void menu(){
+	//Menu General
+	cout << " ¿Que vamos a hacer? " << endl;
+	cout << " 1. Consultar Jugador " << endl;
+	cout << " 2. Agregar Jugador  " << endl;
+	cout << " 3. Modificar Jugador " << endl; 
+	cout << " 4. Eliminar Jugador " << endl;
+	cout << " 5. Visualizar Ranking de jugadores " << endl;
+	cout << " 6. Salir de Programa " << endl;
+}
+
+void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores) {
+    std::cout << "🎮 LISTA DE JUGADORES REGISTRADOS 🎮" << std::endl;
+    std::cout << "────────────────────────────────────" << std::endl;
+
+    for (size_t i = 0; i < matriz_jugadores.size(); ++i) {
+        if (!matriz_jugadores[i].empty()) {
+            std::cout << "• " << matriz_jugadores[i][0] << std::endl;
+        }
+    }
+
+    std::cout << "────────────────────────────────────" << std::endl;
+    std::cout << "Total de jugadores: " << matriz_jugadores.size() << std::endl;
+}
+
 
 
 int main()
@@ -105,7 +132,7 @@ int main()
 	/* Recibimos un archivo .CSV y lo leemos a traves de una 
 	instancia(objeto) de ifstream pasando la ruta del archivo al constructor */
 
-	std::string ruta ="Ranking_CSV.csv";
+	std::string ruta ="/Users/carlosdelgado/Desktop/Tareas/Estructura de Datos y Algoritmos/Proyectos/Ranking_Jugadores/Ranking_CSV.csv";
 	std::ifstream archivo(ruta);
 
 	//DEBUG
@@ -136,7 +163,9 @@ int main()
 
 	//Lectura linea por linea 
 	std::string linea;
-	std::vector<vector<std::string>> jugadores;
+	std::vector<vector<std::string>> jugadores; //MATRIZ principal para el Sorting
+	DList<int> lista_jugadores;//Lista Doblemente ligada
+	int i = 0;
 	while(std::getline(archivo,linea))
 	{
 		//valor verdadero si la lectura fue exitosa o falso si hubo un problema (Fin de archivo).
@@ -150,39 +179,159 @@ int main()
     		campo.erase(campo.find_last_not_of(" \t\r\n") + 1);
 			campos.push_back(campo); //Agrega el contenido al final del vector.
 		}
-		jugadores.push_back(campos); //Vector de jugador se almacena con los demas
+		jugadores.push_back(campos); //Vector de jugador se almacena con los demas en Matriz
 
+		//Nos saltamos los titulos
+		if(i != 0){
+
+		lista_jugadores.insertion(campos[0],std::stoi(campos[1]),std::stoi(campos[2]));
+		}
+		i++;
 	}
 	archivo.close();
+	//// FIN DE LECTURA 
 
+
+////Inicio de programa/////
+	//cout << "La lista tiene: " << lista_jugadores.get_size() << " jugadores creados" << endl;
 	cout << "Bienvendio a la Tabla de Rankin de Jugadores" << endl;
 
 	while(true)
-	{
-	menu();
-	//sorteamos
-	int option;
+{  	//Loop de menu general.
+	int option; //Opcion de Menu general
+	jugadores_totales(jugadores);
+
+
+	cout <<lista_jugadores.toStringForward()<< endl;
+	cout << lista_jugadores.toStringBackward() << endl;
+
+	menu(); //Menu general
 	cin >> option;
-		if(option < jugadores[0].size() && option > 0){
-			std::string label = jugadores[0][option];
-			cout << "Sorting by " << label << "....." << endl;
-		QuickSort(jugadores,1,jugadores.size()-1,option);
-		imprimir_matriz(jugadores);
-		}
+	//CONSULTAR
+	if(option == 1){
+		std::string jugador_a_consultar;
+		cout<< "¿Que jugador quieres consultar" <<endl;
+		cin >> jugador_a_consultar;
+		lista_jugadores.consultar(jugador_a_consultar);
 
-		else if( option == 3)
-		{
-			break;
-		}
-
-
-		else
-		{
-			cout << "Opción no valida" << endl;
-			continue;
-		}
-	
 	}
+	//AGREGAR
+	else if(option == 2){
+		std::vector<std::string> vector_temporal;
+		std::string nuevo_jugador;
+		int nuevo_puntaje;
+		int nuevo_nivel;
+
+		cout<<"Nombre de nuevo jugador: "<<endl;
+		cin >> nuevo_jugador;
+		cout<<"Puntaje de nuevo jugador: "<<endl;
+		cin >> nuevo_puntaje;
+		cout<<"Nivel de nuevo jugador: "<<endl;
+		cin >> nuevo_nivel;
+		//Agregamos a la lista
+		lista_jugadores.insertion(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
+
+		//Agregamos a la matriz
+		vector_temporal.push_back(nuevo_jugador);
+		vector_temporal.push_back(to_string(nuevo_puntaje));
+		vector_temporal.push_back(to_string(nuevo_nivel));
+		jugadores.push_back(vector_temporal); 
+
+		cout<<"Agregar jugador..."<<endl;
+		//debug 
+		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+
+	}
+
+	//MODIFICAR
+	else if(option == 3){
+		std::string jugador_a_modificar;
+		int nuevo_p;
+		int nuevo_n;
+		cout<<"¿Que jugador vamos a modificar?"<<endl;
+		cin >> jugador_a_modificar;
+		cout<<"¿Inserta el nuevo puntaje de " << jugador_a_modificar <<endl;
+		cin >> nuevo_p;
+		cout<<"¿Inserta el nuevo nivel de " << jugador_a_modificar <<endl;
+		cin >> nuevo_n;
+
+		lista_jugadores.update(jugador_a_modificar,nuevo_p,nuevo_n);
+
+		//Modificar Matriz
+		for(int i = 0; i < jugadores.size();i++){
+			if(jugadores[i][0] == jugador_a_modificar){
+				//Si lo encontramos lo modificamos
+				jugadores[i][1] = to_string(nuevo_p);
+				jugadores[i][2] = to_string(nuevo_n);
+				break;
+			}
+		}
+
+	}
+
+	//ELMINAR
+	else if(option == 4){
+		std::string jugador_a_eliminar;
+		cout<<"¿Que jugador vamos a eliminar"<<endl;
+		cin >> jugador_a_eliminar;
+
+		lista_jugadores.deleteAt(jugador_a_eliminar);
+		//debug 
+		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+
+		//eliminar de Matriz 
+		for(int i = 0; i < jugadores.size();i++){
+			if(jugadores[i][0] == jugador_a_eliminar){
+				//Si lo encontramos lo eliminamos
+				jugadores.erase(jugadores.begin()+i);
+				break;
+			}
+		}
+
+	}
+
+
+	//Ordenar y Visualizar Tabla 
+	else if(option == 5){
+		while(true){
+			menu_sort();
+		//sorteamos
+		int option_sort; //Opcion de menu de sort
+		cin >> option_sort;
+			if(option_sort < jugadores[0].size() && option > 0){
+				std::string label = jugadores[0][option_sort];
+				cout << "Sorting by " << label << "....." << endl;
+			QuickSort(jugadores,1,jugadores.size()-1,option_sort);
+			imprimir_matriz(jugadores);
+			}
+
+			else if(option_sort == 3)
+			{
+				break;
+			}
+
+
+			else
+			{
+				cout << "Opción no valida" << endl;
+				continue;
+			}
+
+			}
+	}
+
+	//SALIR
+	else if(option == 6){
+		break;
+	}
+
+	else{
+		cout << "Selección no valida"<< endl;
+		continue;
+	}
+	
+}
+	/////Fin del programa
 	cout << "Saliendo... " << endl;
 	return 0;
 }

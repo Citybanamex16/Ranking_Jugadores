@@ -132,6 +132,13 @@ bool DList<T>::empty() const {
 }
 
 
+std::string toLower(const std::string& texto) {
+    std::string resultado = texto;
+    std::transform(resultado.begin(), resultado.end(), resultado.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    return resultado;
+}
+
 
 template <class T>
 void DList<T>::insertion(std::string nom,int puntos, int nivel)  {
@@ -156,10 +163,13 @@ void DList<T>::update(std::string nombre_a_buscar, T nuevo_puntaje, T nuevo_nive
 	Nodo<T>* ptr = head; //Apuntador temporal para recorrer la lista
 	if(!empty()){
 	// No esta vacío entonces procedemos a buscar
+		std::string nombre_modificar_lower = toLower(nombre_a_buscar);
+
 	for(int i = 0; i < size;i++){
 		//buscamos de entre el rango de nodos.
 		//std::cout << "Este es mi nombre " << ptr -> nombre << std::endl;
-		if(ptr -> nombre == nombre_a_buscar){
+		std::string nombre_actual_lower = toLower(ptr->nombre);
+		if(nombre_modificar_lower == nombre_actual_lower){
 			//encontramos al jugador
 			//std::cout << "modificado PIUM"<< std::endl;
 			ptr -> puntaje = nuevo_puntaje;
@@ -186,8 +196,12 @@ Nodo<T>* DList<T>::search(std::string nombre_a_buscar){
 	Nodo<T>* ptr = head; //Apuntador temporal para recorrer la lista
 
 	if(!empty()){// No esta vacio podemos buscar.
+		std::string nombre_busqueda_lower = toLower(nombre_a_buscar);
+
 	for( int i = 0; i < size; i++){
-		if(ptr->nombre == nombre_a_buscar)
+		std::string nombre_actual_lower = toLower(ptr->nombre);
+
+		if(nombre_busqueda_lower == nombre_actual_lower)
 		{
 			//lo encontramos y devolvemos el indice
 			return ptr;
@@ -229,8 +243,10 @@ template <class T>
 int DList<T>::index(std::string nombre){
 	Nodo<T>* ptr = head; //Apuntador temporal para recorred la lista
 	int i;
+	std::string nombre_busqueda_lower = toLower(nombre);
 	for( i = 0; i < size; i++){
-		if(ptr->nombre == nombre)
+		std::string nombre_actual_lower = toLower(ptr->nombre);
+		if(nombre_busqueda_lower == nombre_actual_lower)
 		{
 			return i;
 		}

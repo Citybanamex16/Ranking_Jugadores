@@ -115,7 +115,7 @@ void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugad
     std::cout << "🎮 LISTA DE JUGADORES REGISTRADOS 🎮" << std::endl;
     std::cout << "────────────────────────────────────" << std::endl;
 
-    for (size_t i = 0; i < matriz_jugadores.size(); ++i) {
+    for (size_t i = 1; i < matriz_jugadores.size(); ++i) {
         if (!matriz_jugadores[i].empty()) {
             std::cout << "• " << matriz_jugadores[i][0] << std::endl;
         }
@@ -202,8 +202,8 @@ int main()
 	jugadores_totales(jugadores);
 
 
-	cout <<lista_jugadores.toStringForward()<< endl;
-	cout << lista_jugadores.toStringBackward() << endl;
+	//cout <<lista_jugadores.toStringForward()<< endl;
+	//cout << lista_jugadores.toStringBackward() << endl;
 
 	menu(); //Menu general
 	cin >> option;
@@ -237,9 +237,9 @@ int main()
 		vector_temporal.push_back(to_string(nuevo_nivel));
 		jugadores.push_back(vector_temporal); 
 
-		cout<<"Agregar jugador..."<<endl;
+		cout<<"Agregando jugador: " << nuevo_jugador<<endl;
 		//debug 
-		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+		cout<< "Nuevo numero de jugadores: " << lista_jugadores.get_size() << endl;
 
 	}
 
@@ -266,7 +266,7 @@ int main()
 				break;
 			}
 		}
-
+		cout << "Jugador: " << jugador_a_modificar << " modificado" << endl;
 	}
 
 	//ELMINAR
@@ -277,7 +277,7 @@ int main()
 
 		lista_jugadores.deleteAt(jugador_a_eliminar);
 		//debug 
-		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+		
 
 		//eliminar de Matriz 
 		for(int i = 0; i < jugadores.size();i++){
@@ -287,7 +287,8 @@ int main()
 				break;
 			}
 		}
-
+		cout << "Jugador: " << jugador_a_eliminar << " eliminado" << endl;
+		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
 	}
 
 

@@ -132,7 +132,7 @@ int main()
 	/* Recibimos un archivo .CSV y lo leemos a traves de una 
 	instancia(objeto) de ifstream pasando la ruta del archivo al constructor */
 
-	std::string ruta ="/Users/carlosdelgado/Desktop/Tareas/Estructura de Datos y Algoritmos/Proyectos/Ranking_Jugadores/Ranking_CSV.csv";
+	std::string ruta ="Ranking_CSV.csv";
 	std::ifstream archivo(ruta);
 
 	//DEBUG

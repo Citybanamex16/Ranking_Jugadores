@@ -13,8 +13,12 @@ Matrícula
 #include <fstream> //Librería para lectura de Archivos .CSV
 #include <sstream>
 #include <iomanip>
+#include <filesystem> //librería para la gestion de archivos
+#include <chrono> //Librería para referenciar la hora en tiempo de ejecución :)
 #include "Proyect_dlist.h"
-using namespace std; 
+
+using namespace std;
+namespace fs = std::filesystem;
 
 
 
@@ -67,7 +71,7 @@ void imprimir_matriz(std::vector<T>& _jugadores) {
 
         // Encabezado
         cout << setw(5)  << "Pos"
-             << setw(20) << "Nombre"   // <-- más ancho por nicks largos
+             << setw(20) << "Nombre"   // <-- más ancho por nombres largos
              << setw(10) << "Puntos"
              << setw(12) << "Nivel"
              << endl;
@@ -108,7 +112,8 @@ void menu(){
 	cout << " 3. Modificar Jugador " << endl; 
 	cout << " 4. Eliminar Jugador " << endl;
 	cout << " 5. Visualizar Ranking de jugadores " << endl;
-	cout << " 6. Salir de Programa " << endl;
+	cout << " 6. Guardar Datos " << endl;
+	cout << " 7. Salir de Programa " << endl;
 }
 
 void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores) {
@@ -122,19 +127,141 @@ void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugad
     }
 
     std::cout << "────────────────────────────────────" << std::endl;
-    std::cout << "Total de jugadores: " << matriz_jugadores.size() << std::endl;
+    std::cout << "Total de jugadores: " << matriz_jugadores.size()-1 << std::endl;
+}
+
+
+//Funciones de carga y guardado de archivos
+fs::path obtener_ruta_ejecutable() {
+    return fs::current_path();  
+}
+
+
+fs::path buscar_csv(const fs::path& root ,const std::string& nombre){
+	//Función que busca recursivamente el archivo
+	
+	std::cout << "Buscando CSV desde: " << root << "\n";
+	std::error_code ec; //Objeto que ayuda a almacenar y gestionar codigos de errores 
+	fs::recursive_directory_iterator it(root,fs::directory_options::skip_permission_denied);
+	/* Lo que el objeto it hace es:
+	Por cada archivo o carpeta dentro de root, incluyendo subcarpetas, checa lo siguiente */
+	//El segundo paremtro del iterador evita buscar en carpetas protegidas -> evitando asi crasheos
+
+	fs::recursive_directory_iterator end;
+
+	while(it != end){
+		if(ec){
+			//Hubo un error, lo saltamos y seguimos buscando
+			ec.clear();
+			it++;
+			continue;
+		}
+
+		const auto& entry = *it;
+
+		if(entry.is_regular_file(ec)){
+			if(entry.path().filename() == nombre){
+				return entry.path();
+			}
+		}
+		it.increment(ec); //Avanza sin excepciones
+	}
+
+	return ""; // no encontrado
+}
+
+
+void escribir_csv(const std::string& ruta,const std::vector<std::vector<std::string>>& matriz) {
+
+    std::ofstream archivo(ruta);
+
+    if (!archivo.is_open()) {
+        std::cerr << "Error: No se pudo abrir archivo para escritura.\n";
+        return;
+    }
+
+    for (const auto& fila : matriz) {
+    	//For loop tipo range-based que por cada fila en la matriz hace lo siguiente
+        bool primero = true; //Es el primer elemento del jugador -> No empezar con coma
+        for (const auto& elemento : fila) {
+        	//For loop que por cada elemento del jugador hace lo siguiente
+
+            if (!primero) archivo << ","; //¿No es el primer? agregamos coma
+            archivo << elemento; //Escribimos el elemento en el archivo
+
+            primero = false;
+        }
+        archivo << "\n"; //Salto que marca el fin de un jugador -> empezamos con uno nuevo
+    }
+
+    archivo.close();
+}
+
+bool guardar_seguro(const std::string& ruta_csv,
+                    const std::vector<std::vector<std::string>>& matriz) {
+
+    std::string ruta_tmp = ruta_csv + ".tmp"; //Hacemos un archivo temporar.
+
+    escribir_csv(ruta_tmp, matriz); //Llamamos a la escritura del archivo
+
+    // Renombrar (sobrescribir)
+    std::error_code ec; //Objeto de gestion de errores 
+    std::filesystem::rename(ruta_tmp, ruta_csv, ec);
+
+    if (ec) {
+        std::cerr << "Error renombrando archivo: " << ec.message() << "\n";
+        return false;
+    }
+
+    return true;
+}
+
+string obtenerHoraActual(){
+	// Obtener la hora actual del sistema
+	auto now = std::chrono::system_clock::now();
+	//El identificador auto dice al compilador que deduzca el tipo de variable a partir de un tipo inicial
+	// Convertir a time_t para usar funciones de ctime :)
+	std::time_t t = std::chrono::system_clock::to_time_t(now);
+
+	std::tm tm = {};
+	//Portabilidad Windows/Mac
+	#ifdef _WIN32 //Si estamos en windows
+    localtime_s(&tm, &t);
+	#else //Nos encontramos en otro entorno
+    localtime_r(&t, &tm);
+    //Estas son instrucciones del procesador (Preprocesado). 
+	#endif
+
+
+	// Formatear la hora y fecha en una cadena
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S"); // Formato personalizable
+    return oss.str();
+
+
 }
 
 
 
-int main()
-{
+
+int main(){
 	/* Recibimos un archivo .CSV y lo leemos a traves de una 
 	instancia(objeto) de ifstream pasando la ruta del archivo al constructor */
+	fs::path root = fs::current_path();
+	fs::path ruta_csv = buscar_csv(root,"Ranking_CSV.csv");
+	std::ifstream archivo;
 
-	std::string ruta ="Ranking_CSV.csv";
-	std::ifstream archivo(ruta);
+	if(ruta_csv != "" ){
+		//Se encontro :)
+		archivo.open(ruta_csv);
+		std::cout << "Archivo encontrado en: " << ruta_csv << "\n";
+	}
 
+	else{
+		std::cout << "CSV no encontrado en la carpeta.\n";
+	}
+
+	
 	//DEBUG
 	if(archivo.is_open()){
 		cout << "Archivo CSV encontrado" << endl;
@@ -194,10 +321,9 @@ int main()
 
 ////Inicio de programa/////
 	//cout << "La lista tiene: " << lista_jugadores.get_size() << " jugadores creados" << endl;
-	cout << "Bienvendio a la Tabla de Rankin de Jugadores" << endl;
+	cout << "Bienvenido a la Tabla de Rankin de Jugadores" << endl;
 
-	while(true)
-{  	//Loop de menu general.
+	while(true){  	//Loop de menu general.
 	int option; //Opcion de Menu general
 	jugadores_totales(jugadores);
 
@@ -209,10 +335,16 @@ int main()
 	cin >> option;
 	//CONSULTAR
 	if(option == 1){
-		std::string jugador_a_consultar;
+		if (jugadores.size() > 0){
+			std::string jugador_a_consultar;
 		cout<< "¿Que jugador quieres consultar" <<endl;
 		cin >> jugador_a_consultar;
 		lista_jugadores.consultar(jugador_a_consultar);
+		}
+		else{
+			cout << "No hay jugadores que consultar " << endl;
+		}
+		
 
 	}
 	//AGREGAR
@@ -245,6 +377,8 @@ int main()
 
 	//MODIFICAR
 	else if(option == 3){
+		if(jugadores.size() > 0) {
+
 		std::string jugador_a_modificar;
 		int nuevo_p;
 		int nuevo_n;
@@ -267,11 +401,19 @@ int main()
 			}
 		}
 		cout << "Jugador: " << jugador_a_modificar << " modificado" << endl;
+
+		}
+
+		else{
+			cout << "Sin jugadores que modificar " << endl;
+		}
+		
 	}
 
 	//ELMINAR
 	else if(option == 4){
-		std::string jugador_a_eliminar;
+		if(jugadores.size() > 0){
+			std::string jugador_a_eliminar;
 		cout<<"¿Que jugador vamos a eliminar"<<endl;
 		cin >> jugador_a_eliminar;
 
@@ -289,11 +431,17 @@ int main()
 		}
 		cout << "Jugador: " << jugador_a_eliminar << " eliminado" << endl;
 		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+
+		}
+		else{
+			cout << "Sin jugadores que eliminar" << endl;
+		}
+		
 	}
 
 
 	//Ordenar y Visualizar Tabla 
-	else if(option == 5){
+	else if(option == 5 and jugadores.size() > 0){
 		while(true){
 			menu_sort();
 		//sorteamos
@@ -321,8 +469,16 @@ int main()
 			}
 	}
 
-	//SALIR
+	//Guardar datos
 	else if(option == 6){
+		if(guardar_seguro(ruta_csv,jugadores) == true){
+			cout << "Archivo Guardado el " + obtenerHoraActual() << endl;
+		}
+	}
+
+
+	//SALIR
+	else if(option == 7){
 		break;
 	}
 
@@ -335,7 +491,7 @@ int main()
 	/////Fin del programa
 	cout << "Saliendo... " << endl;
 	return 0;
-}
+	}
 
 /*
 0 = nombre 

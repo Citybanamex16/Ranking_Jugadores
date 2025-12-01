@@ -1,12 +1,8 @@
 //RankingJugadores.cpp
-
 /*
 Author: Carlos Delgado Contreras 
 Matrícula
-
-
 */
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -16,11 +12,10 @@ Matrícula
 #include <filesystem> //librería para la gestion de archivos
 #include <chrono> //Librería para referenciar la hora en tiempo de ejecución :)
 #include "Proyect_dlist.h"
+#include "Proyecto_hash.h"
 
 using namespace std;
 namespace fs = std::filesystem;
-
-
 
 //Quick Sort
 void swap(std::vector<vector<string>>& v, int i, int j){
@@ -30,7 +25,6 @@ void swap(std::vector<vector<string>>& v, int i, int j){
 	v[j] = v[i]; // Mi vecino adelante vale lo mismo que yo 
 	v[i] = auxiliar; //Valgo lo que valía el vecino 
 }
-
 
 template <typename T>
 int partition(std::vector<T>& v, int low, int high, int parametro){
@@ -116,7 +110,7 @@ void menu(){
 	cout << " 7. Salir de Programa " << endl;
 }
 
-void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores) {
+void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores, Hash_table<string,int>& myhash) {
     std::cout << "🎮 LISTA DE JUGADORES REGISTRADOS 🎮" << std::endl;
     std::cout << "────────────────────────────────────" << std::endl;
 
@@ -127,7 +121,14 @@ void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugad
     }
 
     std::cout << "────────────────────────────────────" << std::endl;
-    std::cout << "Total de jugadores: " << matriz_jugadores.size()-1 << std::endl;
+
+    if(matriz_jugadores.size()-1 != myhash.get_count()){
+    	cout << "¡ALERTA! numero de jugadores no sincronizado entre matriz y hash table";
+    	cout << "Size en matriz: " + to_string(matriz_jugadores.size()-1);
+    	cout << "Size en Hash: " + to_string(myhash.get_count());
+    }
+
+    std::cout << "Total de jugadores: " << myhash.get_count() << std::endl;
 }
 
 
@@ -197,6 +198,7 @@ void escribir_csv(const std::string& ruta,const std::vector<std::vector<std::str
     archivo.close();
 }
 
+
 bool guardar_seguro(const std::string& ruta_csv,
                     const std::vector<std::vector<std::string>>& matriz) {
 
@@ -242,6 +244,14 @@ string obtenerHoraActual(){
 }
 
 
+unsigned int function_hash(const string s){
+	//Funcion del profe
+	unsigned int acum = 0;
+	for (unsigned int i = 0; i < s.size(); i++) {
+		acum += (int) s[i];
+	}
+	return acum;
+}
 
 
 int main(){
@@ -290,8 +300,15 @@ int main(){
 
 	//Lectura linea por linea 
 	std::string linea;
+	//CREACION DE ESTRUCTURAS DE DATOS
 	std::vector<vector<std::string>> jugadores; //MATRIZ principal para el Sorting
-	DList<int> lista_jugadores;//Lista Doblemente ligada
+	//DList<int> lista_jugadores;//Lista Doblemente ligada
+	cout << "Creando Hash" << endl;
+	Hash_table <string,int> myhash(15,string("no_player"),function_hash);//Aqui creamos nuestro Hash de Jugadores
+	cout << "Hash Creado correctamente" << endl;
+	string debug_hash = myhash.toString();
+	cout << debug_hash << endl;
+
 	int i = 0;
 	while(std::getline(archivo,linea))
 	{
@@ -311,7 +328,9 @@ int main(){
 		//Nos saltamos los titulos
 		if(i != 0){
 
-		lista_jugadores.insertion(campos[0],std::stoi(campos[1]),std::stoi(campos[2]));
+		//lista_jugadores.insertion(campos[0],std::stoi(campos[1]),std::stoi(campos[2]));
+		// 0 -> nombre (key) 1 -> valor1 2 -> valor2
+		myhash.put(campos[0],std::stoi(campos[1]),std::stoi(campos[2])); //Insertamos datos en Hash_Table
 		}
 		i++;
 	}
@@ -321,11 +340,17 @@ int main(){
 
 ////Inicio de programa/////
 	//cout << "La lista tiene: " << lista_jugadores.get_size() << " jugadores creados" << endl;
+	cout << "Debug Tabla Hash " << endl;
+	debug_hash = myhash.toString();
+	cout << debug_hash << endl;
+
+
 	cout << "Bienvenido a la Tabla de Rankin de Jugadores" << endl;
 
 	while(true){  	//Loop de menu general.
+
 	int option; //Opcion de Menu general
-	jugadores_totales(jugadores);
+	jugadores_totales(jugadores, myhash);
 
 
 	//cout <<lista_jugadores.toStringForward()<< endl;
@@ -333,19 +358,30 @@ int main(){
 
 	menu(); //Menu general
 	cin >> option;
+
+	//Evitamos errores de usuario -> string por accidente
+    if(cin.fail()) {
+        cout << "Entrada inválida. Por favor ingresa un número." << endl;
+        cin.clear();              // Limpiar el estado de error
+        cin.ignore(10000, '\n');  // Vaciar el buffer hasta el salto de línea
+        continue;                 // Volver al inicio del loop
+    }
+
+
 	//CONSULTAR
 	if(option == 1){
-		if (jugadores.size() > 0){
+		if (myhash.get_count() > 0){
 			std::string jugador_a_consultar;
 		cout<< "¿Que jugador quieres consultar" <<endl;
 		cin >> jugador_a_consultar;
-		lista_jugadores.consultar(jugador_a_consultar);
+		//lista_jugadores.consultar(jugador_a_consultar);
+		//Consulta en Hash Table
+		myhash.get(jugador_a_consultar);
 		}
 		else{
 			cout << "No hay jugadores que consultar " << endl;
 		}
 		
-
 	}
 	//AGREGAR
 	else if(option == 2){
@@ -361,8 +397,8 @@ int main(){
 		cout<<"Nivel de nuevo jugador: "<<endl;
 		cin >> nuevo_nivel;
 		//Agregamos a la lista
-		lista_jugadores.insertion(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
-
+		//lista_jugadores.insertion(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
+		myhash.put(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
 		//Agregamos a la matriz
 		vector_temporal.push_back(nuevo_jugador);
 		vector_temporal.push_back(to_string(nuevo_puntaje));
@@ -371,7 +407,7 @@ int main(){
 
 		cout<<"Agregando jugador: " << nuevo_jugador<<endl;
 		//debug 
-		cout<< "Nuevo numero de jugadores: " << lista_jugadores.get_size() << endl;
+		cout<< "Nuevo numero de jugadores: " << myhash.get_count() << endl;
 
 	}
 
@@ -382,6 +418,7 @@ int main(){
 		std::string jugador_a_modificar;
 		int nuevo_p;
 		int nuevo_n;
+		bool modificacion;
 		cout<<"¿Que jugador vamos a modificar?"<<endl;
 		cin >> jugador_a_modificar;
 		cout<<"¿Inserta el nuevo puntaje de " << jugador_a_modificar <<endl;
@@ -389,7 +426,8 @@ int main(){
 		cout<<"¿Inserta el nuevo nivel de " << jugador_a_modificar <<endl;
 		cin >> nuevo_n;
 
-		lista_jugadores.update(jugador_a_modificar,nuevo_p,nuevo_n);
+		//lista_jugadores.update(jugador_a_modificar,nuevo_p,nuevo_n);
+		modificacion = myhash.modificar(jugador_a_modificar,nuevo_p,nuevo_n);
 
 		//Modificar Matriz
 		for(int i = 0; i < jugadores.size();i++){
@@ -400,7 +438,15 @@ int main(){
 				break;
 			}
 		}
-		cout << "Jugador: " << jugador_a_modificar << " modificado" << endl;
+
+		if(modificacion){
+			cout << "Jugador: " << jugador_a_modificar << " modificado" << endl;
+
+		}
+		else{
+			cout << "Error en modificación " << endl;
+		}
+		
 
 		}
 
@@ -417,8 +463,8 @@ int main(){
 		cout<<"¿Que jugador vamos a eliminar"<<endl;
 		cin >> jugador_a_eliminar;
 
-		lista_jugadores.deleteAt(jugador_a_eliminar);
-		//debug 
+		//lista_jugadores.deleteAt(jugador_a_eliminar);
+		myhash.eliminar(jugador_a_eliminar);
 		
 
 		//eliminar de Matriz 
@@ -430,7 +476,7 @@ int main(){
 			}
 		}
 		cout << "Jugador: " << jugador_a_eliminar << " eliminado" << endl;
-		cout<< "Nuevo size: " << lista_jugadores.get_size() << endl;
+		cout<< "Nuevo size: " << myhash.get_count() << endl;
 
 		}
 		else{
@@ -475,7 +521,6 @@ int main(){
 			cout << "Archivo Guardado el " + obtenerHoraActual() << endl;
 		}
 	}
-
 
 	//SALIR
 	else if(option == 7){

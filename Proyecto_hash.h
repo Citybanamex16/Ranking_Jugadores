@@ -143,12 +143,13 @@ bool Hash_table<Key,Value>::get(Key key){
 		return false;
 	}
 
-	//Caso 2: Hash Index Si encontramos la llave :)
-    string consulta = "Jugador: " + key + 
-                      " | Puntaje: " + to_string(tabla_valores[indice][0]) + 
-                      " | Nivel: " + to_string(tabla_valores[indice][1]);
-    
-    cout << consulta << endl;
+	cout << "\n┌─────────────────────────────────┐" << endl;
+    cout << "│  🎮 STATS DEL JUGADOR           │" << endl;
+    cout << "├─────────────────────────────────┤" << endl;
+    cout << "│  Player: " << left << setw(22) << key << "│" << endl;
+    cout << "│  Score:  " << left << setw(22) << tabla_valores[indice][0] << "│" << endl;
+    cout << "│  Level:  " << left << setw(22) << tabla_valores[indice][1] << "│" << endl;
+    cout << "└─────────────────────────────────┘\n" << endl;
     return true;
 
 }

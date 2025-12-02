@@ -26,3 +26,35 @@ Luis,1800,1
 1. Coloca el archivo CSV en la misma carpeta que el ejecutable **opcionalmente** con nombre `Ranking_CSV.csv`.  
 2. Si el programa **no encuentra el CSV en la ruta relativa**, pedirá al usuario que ingrese la **ruta completa** del archivo.
 3. Posteriormente, podrás interactuar con el programa para ordenar y visualizar el ranking.
+
+
+# Instrucciones de compilacion.
+
+## Requisitos
+- C++17 o superior
+- GCC 8+, Clang 7+, MSVC 2019+
+
+## Compilación
+
+### Windows (MSVC)
+```cmd
+cl /EHsc /std:c++17 RankingJugadores.cpp
+```
+
+### Linux/Mac (GCC)
+```bash
+g++ -std=c++17 RankingJugadores.cpp -o RankingJugadores
+```
+
+### Linux/Mac (GCC < 9.0)
+```bash
+g++ -std=c++17 RankingJugadores.cpp -lstdc++fs -o RankingJugadores
+```
+
+### Con CMake (Recomendado)
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```

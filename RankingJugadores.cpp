@@ -110,7 +110,7 @@ void menu(){
 }
 
 void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores, Hash_table<string,int>& myhash) {
-    std::cout << "🎮 LISTA DE JUGADORES REGISTRADOS 🎮" << std::endl;
+    std::cout << "=== LISTA DE JUGADORES REGISTRADOS ===" << std::endl;
     std::cout << "────────────────────────────────────" << std::endl;
 
     for (size_t i = 1; i < matriz_jugadores.size(); ++i) {
@@ -256,7 +256,12 @@ string limpiar_nombres(const string nombre){
 	string nombre_limpio = nombre;
 
 	for (char &c : nombre_limpio) {
-        c = std::tolower(c);
+        c = std::tolower(static_cast<unsigned char>(c));
+        /*Static_cast lo que hace es conversióndel valor de una expresión a un tipo de dato  en este caso
+        un unsigned char. Esto hace que el tamaño en bits del string sea consistente lo cual puede 
+        mejorar la portabilidad del programa en general. En especial en esta función que se llama constantemente
+        El programa sin importar si es Windows/Linux interpeta estos datos de manera uniforme.*/
+
     }
 
 	return nombre_limpio;
@@ -331,7 +336,7 @@ int main(){
     		campo.erase(campo.find_last_not_of(" \t\r\n") + 1);
 			campos.push_back(campo); //Agrega el contenido al final del vector.
 		}
-		
+
 		if(!campos.empty()){
         campos[0] = limpiar_nombres(campos[0]);
     }

@@ -1,7 +1,7 @@
-/*quadratic.h
+/*Proyecto_hash.h
 Author: Carlos Delgado Contreras 
 A01712819
-26 de novimebre de 2025
+28 de novimebre de 2025
 */
 
 
@@ -12,6 +12,7 @@ A01712819
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cctype> //para convertir un string en minusculas
 
 
 using namespace std;
@@ -63,6 +64,9 @@ Hash_table<Key,Value>::Hash_table(int sze, Key init_key, unsigned int (*f) (cons
 	this -> func = f;
 
 }
+
+
+
 template<class Key, class Value>
 long Hash_table<Key,Value>::HashIndex(const Key key){
 	int i;
@@ -196,9 +200,9 @@ int Hash_table<Key,Value>::get_count(){
 }
 
 template <class Key, class Value>
-bool Hash_table<Key,Value>::modificar(Key llave_a_modifcar, Value nuevo_valor1, Value nuevo_valor2){
+bool Hash_table<Key,Value>::modificar(Key llave_a_modificar, Value nuevo_valor1, Value nuevo_valor2){
 	//Buscar nuestra indice hash a modificar mediante llave 
-	int indice_a_modificar = HashIndex(llave_a_modifcar); //Buscamos la llave.
+	int indice_a_modificar = HashIndex(llave_a_modificar); //Buscamos la llave.
 
 	//Caso 1: No existe mi llave 
 	if(indice_a_modificar == -1){

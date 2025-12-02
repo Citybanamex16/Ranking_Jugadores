@@ -11,7 +11,6 @@ Matrícula
 #include <iomanip>
 #include <filesystem> //librería para la gestion de archivos
 #include <chrono> //Librería para referenciar la hora en tiempo de ejecución :)
-#include "Proyect_dlist.h"
 #include "Proyecto_hash.h"
 
 using namespace std;
@@ -65,7 +64,7 @@ void imprimir_matriz(std::vector<T>& _jugadores) {
 
         // Encabezado
         cout << setw(5)  << "Pos"
-             << setw(20) << "Nombre"   // <-- más ancho por nombres largos
+             << setw(20) << "Nombre"   
              << setw(10) << "Puntos"
              << setw(12) << "Nivel"
              << endl;
@@ -253,6 +252,16 @@ unsigned int function_hash(const string s){
 	return acum;
 }
 
+string limpiar_nombres(const string nombre){
+	string nombre_limpio = nombre;
+
+	for (char &c : nombre_limpio) {
+        c = std::tolower(c);
+    }
+
+	return nombre_limpio;
+}
+
 
 int main(){
 	/* Recibimos un archivo .CSV y lo leemos a traves de una 
@@ -302,7 +311,6 @@ int main(){
 	std::string linea;
 	//CREACION DE ESTRUCTURAS DE DATOS
 	std::vector<vector<std::string>> jugadores; //MATRIZ principal para el Sorting
-	//DList<int> lista_jugadores;//Lista Doblemente ligada
 	cout << "Creando Hash" << endl;
 	Hash_table <string,int> myhash(15,string("no_player"),function_hash);//Aqui creamos nuestro Hash de Jugadores
 	cout << "Hash Creado correctamente" << endl;
@@ -323,12 +331,17 @@ int main(){
     		campo.erase(campo.find_last_not_of(" \t\r\n") + 1);
 			campos.push_back(campo); //Agrega el contenido al final del vector.
 		}
+		
+		if(!campos.empty()){
+        campos[0] = limpiar_nombres(campos[0]);
+    }
+
+
 		jugadores.push_back(campos); //Vector de jugador se almacena con los demas en Matriz
 
 		//Nos saltamos los titulos
 		if(i != 0){
 
-		//lista_jugadores.insertion(campos[0],std::stoi(campos[1]),std::stoi(campos[2]));
 		// 0 -> nombre (key) 1 -> valor1 2 -> valor2
 		myhash.put(campos[0],std::stoi(campos[1]),std::stoi(campos[2])); //Insertamos datos en Hash_Table
 		}
@@ -339,7 +352,6 @@ int main(){
 
 
 ////Inicio de programa/////
-	//cout << "La lista tiene: " << lista_jugadores.get_size() << " jugadores creados" << endl;
 	cout << "Debug Tabla Hash " << endl;
 	debug_hash = myhash.toString();
 	cout << debug_hash << endl;
@@ -353,8 +365,6 @@ int main(){
 	jugadores_totales(jugadores, myhash);
 
 
-	//cout <<lista_jugadores.toStringForward()<< endl;
-	//cout << lista_jugadores.toStringBackward() << endl;
 
 	menu(); //Menu general
 	cin >> option;
@@ -374,7 +384,6 @@ int main(){
 			std::string jugador_a_consultar;
 		cout<< "¿Que jugador quieres consultar" <<endl;
 		cin >> jugador_a_consultar;
-		//lista_jugadores.consultar(jugador_a_consultar);
 		//Consulta en Hash Table
 		myhash.get(jugador_a_consultar);
 		}
@@ -392,12 +401,11 @@ int main(){
 
 		cout<<"Nombre de nuevo jugador: "<<endl;
 		cin >> nuevo_jugador;
+		nuevo_jugador = limpiar_nombres(nuevo_jugador);
 		cout<<"Puntaje de nuevo jugador: "<<endl;
 		cin >> nuevo_puntaje;
 		cout<<"Nivel de nuevo jugador: "<<endl;
 		cin >> nuevo_nivel;
-		//Agregamos a la lista
-		//lista_jugadores.insertion(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
 		myhash.put(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
 		//Agregamos a la matriz
 		vector_temporal.push_back(nuevo_jugador);
@@ -421,12 +429,12 @@ int main(){
 		bool modificacion;
 		cout<<"¿Que jugador vamos a modificar?"<<endl;
 		cin >> jugador_a_modificar;
+		jugador_a_modificar = limpiar_nombres(jugador_a_modificar);
 		cout<<"¿Inserta el nuevo puntaje de " << jugador_a_modificar <<endl;
 		cin >> nuevo_p;
 		cout<<"¿Inserta el nuevo nivel de " << jugador_a_modificar <<endl;
 		cin >> nuevo_n;
 
-		//lista_jugadores.update(jugador_a_modificar,nuevo_p,nuevo_n);
 		modificacion = myhash.modificar(jugador_a_modificar,nuevo_p,nuevo_n);
 
 		//Modificar Matriz
@@ -462,16 +470,15 @@ int main(){
 			std::string jugador_a_eliminar;
 		cout<<"¿Que jugador vamos a eliminar"<<endl;
 		cin >> jugador_a_eliminar;
-
-		//lista_jugadores.deleteAt(jugador_a_eliminar);
+		jugador_a_eliminar = limpiar_nombres(jugador_a_eliminar);
 		myhash.eliminar(jugador_a_eliminar);
-		
 
 		//eliminar de Matriz 
 		for(int i = 0; i < jugadores.size();i++){
 			if(jugadores[i][0] == jugador_a_eliminar){
 				//Si lo encontramos lo eliminamos
 				jugadores.erase(jugadores.begin()+i);
+				cout << "Jugador eliminado en Matriz " << endl;
 				break;
 			}
 		}

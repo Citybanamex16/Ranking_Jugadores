@@ -164,15 +164,31 @@ bool Hash_table<Key,Value>::get(Key key){
 		return false;
 	}
 
-	cout << "\n┌─────────────────────────────────┐" << endl;
-    cout << "│  	 STATS DEL JUGADOR           │" << endl;
-    cout << "├─────────────────────────────────┤" << endl;
-    cout << "│  Player: " << left << setw(22) << key << "│" << endl;
-    cout << "│  Score:  " << left << setw(22) << tabla_valores[indice][0] << "│" << endl;
-    cout << "│  Level:  " << left << setw(22) << tabla_valores[indice][1] << "│" << endl;
-    cout << "└─────────────────────────────────┘\n" << endl;
-    return true;
+	// FORMATO DE IMPRESIÓN UNIVERSAL
+	//Se cambio pues en el Powershell de Windows sale HORRIBLE la implementación anterior.
+	// Define el ancho total del marco
+	const int ANCHO_CONTENIDO = 30; 
+    //const int ANCHO_TOTAL = ANCHO_CONTENIDO + 2;
 
+	// Línea superior del marco
+    cout << "\n+" << string(ANCHO_CONTENIDO, '-') << "+" << endl;
+    
+	// Título centrado
+    cout << "| " << left << setw(ANCHO_CONTENIDO) << "STATS DEL JUGADOR" << " |" << endl;
+    
+	// Separador
+    cout << "+" << string(ANCHO_CONTENIDO, '-') << "+" << endl;
+    
+	// Datos del jugador
+    cout << "| Player:" << left << setw(ANCHO_CONTENIDO - 8) << key << " |" << endl;
+    cout << "| Score: " << left << setw(ANCHO_CONTENIDO - 8) << tabla_valores[indice][0] << " |" << endl;
+    cout << "| Level: " << left << setw(ANCHO_CONTENIDO - 8) << tabla_valores[indice][1] << " |" << endl;
+    
+	// Línea inferior del marco
+    cout << "+" << string(ANCHO_CONTENIDO, '-') << "+\n" << endl;
+	// ----------------------------------------------
+
+    return true;
 }
 
 

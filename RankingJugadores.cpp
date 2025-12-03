@@ -111,15 +111,16 @@ void menu(){
 
 void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugadores, Hash_table<string,int>& myhash) {
     std::cout << "=== LISTA DE JUGADORES REGISTRADOS ===" << std::endl;
-    std::cout << "────────────────────────────────────" << std::endl;
+    //std::cout << "────────────────────────────────────" << std::endl;
+    std::cout << "====================================" << std::endl;
 
     for (size_t i = 1; i < matriz_jugadores.size(); ++i) {
         if (!matriz_jugadores[i].empty()) {
-            std::cout << "• " << matriz_jugadores[i][0] << std::endl;
+            std::cout << "* " << matriz_jugadores[i][0] << std::endl;
         }
     }
 
-    std::cout << "────────────────────────────────────" << std::endl;
+    std::cout << "====================================" << std::endl;
 
     if(matriz_jugadores.size()-1 != (unsigned int) myhash.get_count()){
     	cout << "¡ALERTA! numero de jugadores no sincronizado entre matriz y hash table" << endl;
@@ -262,6 +263,9 @@ string limpiar_nombres(const string nombre){
         mejorar la portabilidad del programa en general. En especial en esta función que se llama constantemente
         El programa sin importar si es Windows/Linux interpeta estos datos de manera uniforme.*/
 
+        //Eliminar ls espaciooooos 
+        nombre_limpio.erase(std::remove(nombre_limpio.begin(), nombre_limpio.end(), ' '),nombre_limpio.end());
+
     }
 
 	return nombre_limpio;
@@ -320,7 +324,7 @@ int main(){
 	Hash_table <string,int> myhash(31,string("no_player"),function_hash);//Aqui creamos nuestro Hash de Jugadores
 	cout << "Hash Creado correctamente" << endl;
 	string debug_hash = myhash.toString();
-	cout << debug_hash << endl;
+	//cout << debug_hash << endl;
 
 	int i = 0;
 	while(std::getline(archivo,linea))
@@ -357,12 +361,11 @@ int main(){
 
 
 ////Inicio de programa/////
-	cout << "Debug Tabla Hash " << endl;
-	debug_hash = myhash.toString();
-	cout << debug_hash << endl;
+	//cout << "Debug Tabla Hash " << endl;
+	//debug_hash = myhash.toString();
+	//cout << debug_hash << endl;
 
-
-	cout << "Bienvenido a la Tabla de Rankin de Jugadores" << endl;
+	cout << "¡Bienvenido a la Tabla de Rankin de Jugadores!" << endl;
 
 	while(true){  	//Loop de menu general.
 
@@ -387,8 +390,8 @@ int main(){
 	if(option == 1){
 		if (myhash.get_count() > 0){
 			std::string jugador_a_consultar;
-		cout<< "¿Que jugador quieres consultar" <<endl;
-		cin >> jugador_a_consultar;
+		cout<< "¿Que jugador quieres consultar? " <<endl;
+		getline(cin >> ws, jugador_a_consultar); //Getline para que si el usuario mete espacios no explote esto
 		//cout << limpiar_nombres(jugador_a_consultar) << endl;
 		jugador_a_consultar = limpiar_nombres(jugador_a_consultar);
 		//Consulta en Hash Table
@@ -409,11 +412,16 @@ int main(){
 				int nuevo_nivel;
 
 				cout<<"Nombre de nuevo jugador: "<<endl;
-				cin >> nuevo_jugador;
+				getline(cin >> ws , nuevo_jugador);
 				nuevo_jugador = limpiar_nombres(nuevo_jugador);
-				cout<<"Puntaje de nuevo jugador: "<<endl;
+
+				//Checar que esto sean INTS que luego la gente se equivoca
+
+
+				cout<<"Puntaje de nuevo jugador (solo numeros) : "<<endl;
 				cin >> nuevo_puntaje;
-				cout<<"Nivel de nuevo jugador: "<<endl;
+
+				cout<<"Nivel de nuevo jugador (solo numeros) : "<<endl;
 				cin >> nuevo_nivel;
 
 
@@ -450,12 +458,12 @@ int main(){
 		int nuevo_n;
 		bool modificacion;
 		cout<<"¿Que jugador vamos a modificar?"<<endl;
-		cin >> jugador_a_modificar;
+		getline(cin >> ws, jugador_a_modificar);
 		jugador_a_modificar = limpiar_nombres(jugador_a_modificar);
 		myhash.get(jugador_a_modificar);
-		cout<<"¿Inserta el nuevo puntaje de " << jugador_a_modificar <<endl;
+		cout<<"Inserta el nuevo puntaje de " << jugador_a_modificar << " (Solo numeros) " <<endl;
 		cin >> nuevo_p;
-		cout<<"¿Inserta el nuevo nivel de " << jugador_a_modificar <<endl;
+		cout<<"Inserta el nuevo nivel de " << jugador_a_modificar << " (Solo numeros) " <<endl;
 		cin >> nuevo_n;
 
 		modificacion = myhash.modificar(jugador_a_modificar,nuevo_p,nuevo_n);
@@ -492,7 +500,7 @@ int main(){
 		if(jugadores.size() > 0){
 			std::string jugador_a_eliminar;
 		cout<<"¿Que jugador vamos a eliminar"<<endl;
-		cin >> jugador_a_eliminar;
+		getline(cin >> ws, jugador_a_eliminar);
 		jugador_a_eliminar = limpiar_nombres(jugador_a_eliminar);
 		myhash.eliminar(jugador_a_eliminar);
 

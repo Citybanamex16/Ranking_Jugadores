@@ -121,7 +121,7 @@ void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugad
 
     std::cout << "────────────────────────────────────" << std::endl;
 
-    if(matriz_jugadores.size()-1 != myhash.get_count()){
+    if(matriz_jugadores.size()-1 != (unsigned int) myhash.get_count()){
     	cout << "¡ALERTA! numero de jugadores no sincronizado entre matriz y hash table" << endl;
     	cout << "Size en matriz: " + to_string(matriz_jugadores.size()-1);
     	cout << "Size en Hash: " + to_string(myhash.get_count());
@@ -246,7 +246,7 @@ string obtenerHoraActual(){
 unsigned int function_hash(const string s){
 	//Funcion del profe
 	unsigned int acum = 0;
-	for (unsigned int i = 0; i < s.size(); i++) {
+	for (size_t i = 0; i < s.size(); i++) {
 		acum += (int) s[i];
 	}
 	return acum;
@@ -461,7 +461,7 @@ int main(){
 		modificacion = myhash.modificar(jugador_a_modificar,nuevo_p,nuevo_n);
 
 		//Modificar Matriz
-		for(int i = 0; i < jugadores.size();i++){
+		for(size_t i = 0; i < jugadores.size();i++){
 			if(jugadores[i][0] == jugador_a_modificar){
 				//Si lo encontramos lo modificamos
 				jugadores[i][1] = to_string(nuevo_p);
@@ -497,7 +497,7 @@ int main(){
 		myhash.eliminar(jugador_a_eliminar);
 
 		//eliminar de Matriz 
-		for(int i = 0; i < jugadores.size();i++){
+		for(size_t i = 0; i < jugadores.size();i++){
 			if(jugadores[i][0] == jugador_a_eliminar){
 				//Si lo encontramos lo eliminamos
 				jugadores.erase(jugadores.begin()+i);
@@ -521,7 +521,7 @@ int main(){
 		while(true){
 			menu_sort();
 		//sorteamos
-		int option_sort; //Opcion de menu de sort
+		size_t option_sort; //Opcion de menu de sort
 		cin >> option_sort;
 			if(option_sort < jugadores[0].size() && option > 0){
 				std::string label = jugadores[0][option_sort];
@@ -547,7 +547,7 @@ int main(){
 
 	//Guardar datos
 	else if(option == 6){
-		if(guardar_seguro(ruta_csv,jugadores) == true){
+		if(guardar_seguro(ruta_csv.string(),jugadores) == true){
 			cout << "Archivo Guardado el " + obtenerHoraActual() << endl;
 		}
 	}

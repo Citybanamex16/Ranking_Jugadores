@@ -13,6 +13,7 @@ A01712819
 #include <sstream>
 #include <vector>
 #include <cctype> //para convertir un string en minusculas
+#include <iomanip>  // mejorar prints
 
 
 using namespace std;
@@ -32,6 +33,7 @@ private:
 public:
 	Hash_table(string);
 	Hash_table(int,Key, unsigned int (*f) (const string));
+	 ~Hash_table();  // DESTRUCTOR >:)
 	//int hash_function(int); //recibe una llave y devuelve un indice
 	bool put(Key,Value,Value); //recibe una llave y la inserta dependiendo de lo que Hash_function dicte -> si ya existe lo modifica.
 	bool eliminar(Key); //Recibimos la llave a eliminar, la buscamos y la eliminamos
@@ -42,18 +44,19 @@ public:
 	int get_count(); // devuelve la cantidad de jugadores actuales
 	long HashIndex(const Key);
 	bool modificar(const Key,const Value, const Value); //Modificar a un jugador existente
+	bool full();
 };
 
 
 template <class Key, class Value>
-Hash_table<Key,Value>::Hash_table(int sze, Key init_key, unsigned int (*f) (const string)):size(sze),tabla_valores(size-1,vector<int>(2,-1)){
+Hash_table<Key,Value>::Hash_table(int sze, Key init_key, unsigned int (*f) (const string)):size(sze),tabla_valores(size,vector<int>(2,-1)){
 	count = 0;
 	llaves_iniciales = init_key;
 	//Inicializamos nuestras estructuras 
-	tabla_llaves = new Key[size-1];
+	tabla_llaves = new Key[size];
 	
 
-	for(int i = 0; i < size-1;i++){
+	for(int i = 0; i < size;i++){
 		vector<int> datos;
 		//datos[0] = -1; //Todos los valores en -1
 		//datos[1] = -1; //Todos los valores en -1
@@ -63,6 +66,12 @@ Hash_table<Key,Value>::Hash_table(int sze, Key init_key, unsigned int (*f) (cons
 
 	this -> func = f;
 
+}
+
+// Implementación
+template <class Key, class Value>
+Hash_table<Key,Value>::~Hash_table(){
+    delete[] tabla_llaves;  // Liberar memoria
 }
 
 
@@ -88,7 +97,10 @@ long Hash_table<Key,Value>::HashIndex(const Key key){
 
 template <class Key, class Value>
 bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
-	int indice = func(key) % size; //Creamos indice hash
+
+	if(!full()){
+
+		int indice = func(key) % size; //Creamos indice hash
 	cout << "indice de: " + key + " es " + to_string(indice) << endl;
 	int start = indice;
 	int i = 0;
@@ -99,6 +111,7 @@ bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
 		if(tabla_llaves[indice] == key){
 			tabla_valores[indice][0] = value1; //Actualizamos llave.
 			tabla_valores[indice][1] = value2; //Actualizamos llave.
+			return true;
 		}
 
 		//Caso 2: No es la misma llave ->colisión
@@ -121,6 +134,14 @@ bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
 	count++;
 	cout << "Añadimos llave y valor " << key << value1 << " " << value2 << " en indice " + to_string(indice)<<endl;
 	return true;
+
+	}
+	else{
+		cout << "Limite lleno ";
+		return false;
+	}
+
+	
 	
 }
 
@@ -144,7 +165,7 @@ bool Hash_table<Key,Value>::get(Key key){
 	}
 
 	cout << "\n┌─────────────────────────────────┐" << endl;
-    cout << "│  🎮 STATS DEL JUGADOR           │" << endl;
+    cout << "│  	 STATS DEL JUGADOR           │" << endl;
     cout << "├─────────────────────────────────┤" << endl;
     cout << "│  Player: " << left << setw(22) << key << "│" << endl;
     cout << "│  Score:  " << left << setw(22) << tabla_valores[indice][0] << "│" << endl;
@@ -159,7 +180,7 @@ bool Hash_table<Key,Value>::get(Key key){
 template <class Key, class Value>
 std::string Hash_table<Key, Value>::toString() const {
 	std::stringstream aux;
-	for (int i = 0; i < size-1; i++){
+	for (int i = 0; i < size; i++){
 			if (tabla_llaves[i] != llaves_iniciales){
 				aux << "(" << i << " ";
 			  aux << tabla_llaves[i] << " : " << tabla_valores[i][0] << " , " << tabla_valores[i][1] << ") ";
@@ -218,6 +239,17 @@ bool Hash_table<Key,Value>::modificar(Key llave_a_modificar, Value nuevo_valor1,
 
 	}
 
+	return false;
+}
+
+template<class Key, class Value>
+bool Hash_table<Key,Value>::full(){
+	if(count >= size*0.7){
+		return true;
+	}
+	else{
+		return false;
+	}
 	return false;
 }
 

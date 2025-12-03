@@ -122,7 +122,7 @@ void jugadores_totales(const std::vector<std::vector<std::string>>& matriz_jugad
     std::cout << "────────────────────────────────────" << std::endl;
 
     if(matriz_jugadores.size()-1 != myhash.get_count()){
-    	cout << "¡ALERTA! numero de jugadores no sincronizado entre matriz y hash table";
+    	cout << "¡ALERTA! numero de jugadores no sincronizado entre matriz y hash table" << endl;
     	cout << "Size en matriz: " + to_string(matriz_jugadores.size()-1);
     	cout << "Size en Hash: " + to_string(myhash.get_count());
     }
@@ -317,7 +317,7 @@ int main(){
 	//CREACION DE ESTRUCTURAS DE DATOS
 	std::vector<vector<std::string>> jugadores; //MATRIZ principal para el Sorting
 	cout << "Creando Hash" << endl;
-	Hash_table <string,int> myhash(15,string("no_player"),function_hash);//Aqui creamos nuestro Hash de Jugadores
+	Hash_table <string,int> myhash(31,string("no_player"),function_hash);//Aqui creamos nuestro Hash de Jugadores
 	cout << "Hash Creado correctamente" << endl;
 	string debug_hash = myhash.toString();
 	cout << debug_hash << endl;
@@ -389,6 +389,8 @@ int main(){
 			std::string jugador_a_consultar;
 		cout<< "¿Que jugador quieres consultar" <<endl;
 		cin >> jugador_a_consultar;
+		//cout << limpiar_nombres(jugador_a_consultar) << endl;
+		jugador_a_consultar = limpiar_nombres(jugador_a_consultar);
 		//Consulta en Hash Table
 		myhash.get(jugador_a_consultar);
 		}
@@ -399,28 +401,43 @@ int main(){
 	}
 	//AGREGAR
 	else if(option == 2){
-		std::vector<std::string> vector_temporal;
-		std::string nuevo_jugador;
-		int nuevo_puntaje;
-		int nuevo_nivel;
+		if(!myhash.full()){
+			//inputs
+				std::vector<std::string> vector_temporal;
+				std::string nuevo_jugador;
+				int nuevo_puntaje;
+				int nuevo_nivel;
 
-		cout<<"Nombre de nuevo jugador: "<<endl;
-		cin >> nuevo_jugador;
-		nuevo_jugador = limpiar_nombres(nuevo_jugador);
-		cout<<"Puntaje de nuevo jugador: "<<endl;
-		cin >> nuevo_puntaje;
-		cout<<"Nivel de nuevo jugador: "<<endl;
-		cin >> nuevo_nivel;
-		myhash.put(nuevo_jugador,nuevo_puntaje,nuevo_nivel);
-		//Agregamos a la matriz
-		vector_temporal.push_back(nuevo_jugador);
-		vector_temporal.push_back(to_string(nuevo_puntaje));
-		vector_temporal.push_back(to_string(nuevo_nivel));
-		jugadores.push_back(vector_temporal); 
+				cout<<"Nombre de nuevo jugador: "<<endl;
+				cin >> nuevo_jugador;
+				nuevo_jugador = limpiar_nombres(nuevo_jugador);
+				cout<<"Puntaje de nuevo jugador: "<<endl;
+				cin >> nuevo_puntaje;
+				cout<<"Nivel de nuevo jugador: "<<endl;
+				cin >> nuevo_nivel;
 
-		cout<<"Agregando jugador: " << nuevo_jugador<<endl;
-		//debug 
-		cout<< "Nuevo numero de jugadores: " << myhash.get_count() << endl;
+
+			if(myhash.put(nuevo_jugador,nuevo_puntaje,nuevo_nivel)){
+				//Agregamos a la matriz
+				vector_temporal.push_back(nuevo_jugador);
+				vector_temporal.push_back(to_string(nuevo_puntaje));
+				vector_temporal.push_back(to_string(nuevo_nivel));
+				jugadores.push_back(vector_temporal); 
+
+				cout<<"Agregando jugador: " << nuevo_jugador<<endl;
+				//debug 
+				cout<< "Nuevo numero de jugadores: " << myhash.get_count() << endl;
+
+			}
+			else{
+				cout << "Error en la inserción en Hash Table. Abort para evitar desincronización. Trata eliminando un jugador " << endl;
+			}
+		}
+
+	else{
+		cout << "Limite de jugadores, eliminar jugadores para poder agegar mas " << endl;
+	}
+		
 
 	}
 
@@ -435,6 +452,7 @@ int main(){
 		cout<<"¿Que jugador vamos a modificar?"<<endl;
 		cin >> jugador_a_modificar;
 		jugador_a_modificar = limpiar_nombres(jugador_a_modificar);
+		myhash.get(jugador_a_modificar);
 		cout<<"¿Inserta el nuevo puntaje de " << jugador_a_modificar <<endl;
 		cin >> nuevo_p;
 		cout<<"¿Inserta el nuevo nivel de " << jugador_a_modificar <<endl;

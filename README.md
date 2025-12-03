@@ -29,32 +29,12 @@ Luis,1800,1
 
 
 # Instrucciones de compilacion.
+# Linux/Mac
+g++ -std=c++17 -Wall -Wextra RankingJugadores.cpp -o RankingJugadores
 
-## Requisitos
-- C++17 o superior
-- GCC 8+, Clang 7+, MSVC 2019+
+# Windows (MinGW)
+g++ -std=c++17 -Wall RankingJugadores.cpp -o RankingJugadores.exe
 
-## Compilación
-
-### Windows (MSVC)
-```cmd
-cl /EHsc /std:c++17 RankingJugadores.cpp
-```
-
-### Linux/Mac (GCC)
-```bash
-g++ -std=c++17 RankingJugadores.cpp -o RankingJugadores
-```
-
-### Linux/Mac (GCC < 9.0)
-```bash
-g++ -std=c++17 RankingJugadores.cpp -lstdc++fs -o RankingJugadores
-```
-
-### Con CMake (Recomendado)
-```bash
-mkdir build
-cd build
-cmake ..
-make
+# Windows (MSVC)
+cl /EHsc /std:c++17 /W4 RankingJugadores.cpp
 ```

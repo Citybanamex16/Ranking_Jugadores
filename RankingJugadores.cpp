@@ -72,7 +72,7 @@ void imprimir_matriz(std::vector<T>& _jugadores) {
         cout << string(50, '-') << endl;
 
         // Recorrer jugadores
-        for (int i = 1; i < _jugadores.size(); i++) {
+        for (size_t i = 1; i < _jugadores.size(); i++) {
             cout << setw(5) << i
                  << setw(20) << _jugadores[i][0]   // Nombre
                  << setw(10) << _jugadores[i][1]   // Puntos
@@ -263,10 +263,11 @@ string limpiar_nombres(const string nombre){
         mejorar la portabilidad del programa en general. En especial en esta función que se llama constantemente
         El programa sin importar si es Windows/Linux interpeta estos datos de manera uniforme.*/
 
-        //Eliminar ls espaciooooos 
-        nombre_limpio.erase(std::remove(nombre_limpio.begin(), nombre_limpio.end(), ' '),nombre_limpio.end());
+        
 
     }
+    //Eliminar ls espaciooooos 
+    nombre_limpio.erase(std::remove(nombre_limpio.begin(), nombre_limpio.end(), ' '),nombre_limpio.end());
 
 	return nombre_limpio;
 }

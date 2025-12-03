@@ -11,6 +11,7 @@ Matrícula
 #include <iomanip>
 #include <filesystem> //librería para la gestion de archivos
 #include <chrono> //Librería para referenciar la hora en tiempo de ejecución :)
+#include <algorithm>
 #include "Proyecto_hash.h"
 
 using namespace std;
@@ -266,7 +267,7 @@ string limpiar_nombres(const string nombre){
         
 
     }
-    //Eliminar ls espaciooooos 
+    //Eliminar los espaciooooos 
     nombre_limpio.erase(std::remove(nombre_limpio.begin(), nombre_limpio.end(), ' '),nombre_limpio.end());
 
 	return nombre_limpio;

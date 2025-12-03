@@ -116,7 +116,7 @@ bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
 
 		//Caso 2: No es la misma llave ->colisión
 		i++;
-		cout << key + "Tuve su colisión numero " + to_string(i)<< endl;
+		//cout << key + "Tuve su colisión numero " + to_string(i)<< endl;
 		indice = collision(indice,i);
 		
 

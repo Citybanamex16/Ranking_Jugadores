@@ -101,7 +101,7 @@ bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
 	if(!full()){
 
 		int indice = func(key) % size; //Creamos indice hash
-	cout << "indice de: " + key + " es " + to_string(indice) << endl;
+	//cout << "indice de: " + key + " es " + to_string(indice) << endl;
 	int start = indice;
 	int i = 0;
 	
@@ -132,7 +132,7 @@ bool Hash_table<Key,Value>::put(Key key, Value value1, Value value2){
 	tabla_valores[indice][0] = value1; //Añadimos el valor en el cajon disponible
 	tabla_valores[indice][1] = value2;
 	count++;
-	cout << "Añadimos llave y valor " << key << value1 << " " << value2 << " en indice " + to_string(indice)<<endl;
+	//cout << "Añadimos llave y valor " << key << value1 << " " << value2 << " en indice " + to_string(indice)<<endl;
 	return true;
 
 	}

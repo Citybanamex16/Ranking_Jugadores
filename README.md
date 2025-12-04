@@ -41,9 +41,9 @@ Ranking de Jugadores es un programa en consola de ordenamiento y estructura de j
 Utilizamos archivos CSV para la lectura y escritura de datos de la tabla de jugadores.El archivo CSV debe contener los jugadores con los campos separados por comas, por ejemplo: Juan,1500,3 Maria,2000,5 Luis,1800,1. Implementamos un sistema de búsqueda con base en la biblioteca <filesystem> de c + + para una obtención del archivo CSV desde el sistema de archivos del usuario. Este sistema navega y gestiona rutas para encontrar el archivo CSV correctamente de entre los archivos del usuario. 
 
 Para guardar los datos del usuario, generamos una copia temporal del csv original durante el tiempo de ejecución del programa. Al ejecutar la función de guardado lo renombramos como el archivo principal sobreescribiendo los últimos cambios y guardando las acciones del usuario en el CSV. Utilizamos las siguientes librerías para lograr esto:
-- <fstream> para abrir archivos en modo escritura 
-- <sstream> para formatear strings 
-- <iomanip> para formatear numeros
++ fstream -> para abrir archivos en modo escritura 
++ sstream -> para formatear strings 
++ iomanip -> para formatear numeros
 
 -------------------
 
